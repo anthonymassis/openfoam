@@ -1,0 +1,58 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+setSampling
+{
+//   Sample slanted-back velocity
+    type sets;
+
+//  Where to load it from (if not already in solver)
+    // libs            (sampling); //pf2012
+    libs            ("libsampling.so"); // of8
+    writeControl    writeTime;
+    interpolationScheme cellPoint;
+    setFormat       raw;
+
+//  Fields to be sampled
+    fields
+    (
+        U
+    );
+
+    sets
+    (
+        x314
+        {
+            type    lineUniform;
+            axis    y;
+            start   (-3.13999 0.0 0.0);
+            end     (-3.13999 0.1 0.0);
+            nPoints 250;
+        }
+        x214
+        {
+            type    lineUniform;
+            axis    y;
+            start   (-2.14 0.0 0.0);
+            end     (-2.14 0.1 0.0);
+            nPoints 250;
+        }
+
+        x081
+        {
+            type    lineUniform;
+            axis    y;
+            start   (-0.81 0.0 0.0);
+            end     (-0.81 0.1 0.0);
+            nPoints 250;
+        }
+
+    );
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

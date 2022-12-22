@@ -1,0 +1,103 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        tolerance       1e-06;
+        relTol          0.1;
+        smoother        GaussSeidel;
+        nPreSweeps      0;
+        nPostSweeps     2;
+        cacheAgglomeration  on;
+        agglomerator    faceAreaPair;
+        nCellsInCoarsestLevel 1000;
+        mergeLevels     1;
+    }
+
+    pFinal
+    {
+        $p;
+        solver             GAMG;
+        smoother            GaussSeidel;
+        tolerance       1e-6;
+        relTol          0;
+    }
+
+    "(U|k|omega|B|nuTilda|s)"
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-5;
+        relTol          0.01;
+    }
+
+    Phi
+    {
+        $p;
+    }
+}
+
+potentialFlow
+{
+    nNonOrthogonalCorrectors 10;
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 0;
+    consistent yes;
+
+    pRefCell        0;
+    pRefValue       0;
+
+    residualControl
+    {
+        p               1e-5;
+        U               1e-5;
+        k               1e-5;
+        omega           1e-5;
+        nuTilda         1e-5;
+    }
+}
+
+
+relaxationFactors
+{
+    fields
+    {
+        p               0.3;
+        Phi             0.3;
+    }
+    equations
+    {
+        default         0;
+        U               0.4;
+        k               0.7;
+        omega           0.7;
+        nuTilda         0.7;
+    }
+}
+
+cache
+{
+    grad(U);
+}
+
+// ************************************************************************* //

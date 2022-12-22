@@ -1,0 +1,110 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2012                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+scale 1;
+
+// ------------------------------------------------------------------------- //
+// Specify some constants
+    nx 157;                                   // No. x-grid points
+    ny 70;                                    // No. y-grid points
+    nz 30;                                    // No. z-grid points
+
+    gy 51.38491433;                           // Spacing y-grid
+
+// ------------------------------------------------------------------------- //
+// Specify vertices for multi-block mesh using codeStream for programming commands
+    vertices
+    (
+        (-3.14  0.00000  0.15)     // pt 000
+        ( 0.00  0.00000  0.15)     // pt 001
+        ( 0.00  0.00000 -0.15)     // pt 002
+        (-3.14  0.00000 -0.15)     // pt 003
+        (-3.14  0.90905  0.15)     // pt 004
+        ( 0.00  0.90905  0.15)     // pt 005
+        ( 0.00  0.90905 -0.15)     // pt 006
+        (-3.14  0.90905 -0.15)     // pt 007
+
+);
+
+// ------------------------------------------------------------------------- //
+// Specify blocks for multi-block mesh
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) ($nx $nz $ny) simpleGrading (1 1 $gy) //  inlet
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces
+        (
+            (0 7 4 3)
+        );
+    }
+
+    outlet
+    {
+        type patch;
+        faces
+        (
+            (2 6 5 1)
+        );
+    }
+
+    lowerWall
+    {
+        type wall;
+        faces
+        (
+            (3 2 1 0)
+        );
+    }
+
+    upperWall
+    {
+        type wall;
+        faces
+        (
+            (4 5 6 7)
+        );
+    }
+
+    front
+    {
+        type cyclic;
+        neighbourPatch    back;
+        faces
+        (
+            (0 1 5 4)
+        );
+    }
+
+    back
+    {
+        type cyclic;
+        neighbourPatch    front;
+        faces
+        (
+            (7 6 2 3)
+        );
+    }
+
+);
+
+// ************************************************************************* //

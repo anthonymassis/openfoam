@@ -1,0 +1,35 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # Run from this directory
+
+# ------------------------------------------------------------------------------
+# Set up files for RANS simulation
+
+# Set up initial conditions from 0.org to 0
+#cp -a 0.org/. 0
+
+# Copy RANS files into the "0", "constant", and "system" directories
+# cp -a ransFiles/0/. 0
+# cp ransFiles/constant/momentumTransport constant/momentumTransport
+# cp -a ransFiles/system/. system
+#
+# # ------------------------------------------------------------------------------
+# # Generate coarse RANS mesh
+# blockMesh
+
+# ------------------------------------------------------------------------------
+# RANS simulation
+
+# Decomopose mesh into subdomains with decomposedPar
+decomposePar
+
+# renumberMesh to reduce the bandwidth of the coefficient matrices.
+mpirun -np 28 renumberMesh -overwrite -parallel
+
+# Run simpleFoam simulation in parallel
+mpirun -np 28 simpleFoam -parallel > log
+
+# Reconstruct solution
+reconstructPar
+rm -r processor*
+
+# ------------------------------------------------------------------------------
